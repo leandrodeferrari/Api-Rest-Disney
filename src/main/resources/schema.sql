@@ -31,3 +31,12 @@ CREATE TABLE IF NOT EXISTS movies_series(
     CONSTRAINT PK_movies_series_id PRIMARY KEY(ID),
     CONSTRAINT CK_movies_series_qualification CHECK(qualification <= 5)
 );
+
+CREATE TABLE IF NOT EXISTS movies_series_genres(
+	ID BIGINT AUTO_INCREMENT NOT NULL,
+    GENRE_ID INT NOT NULL,
+    MOVIE_SERIE_ID BIGINT NOT NULL,
+    CONSTRAINT PK_movies_series_genres_id PRIMARY KEY(ID),
+    CONSTRAINT FK_movies_series_genres_genre_id FOREIGN KEY(GENRE_ID) REFERENCES disney.genres(ID),
+    CONSTRAINT FK_movies_series_genres_movie_serie_id FOREIGN KEY(MOVIE_SERIE_ID) REFERENCES disney.movies_series(ID)
+);
