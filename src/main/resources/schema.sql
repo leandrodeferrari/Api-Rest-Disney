@@ -40,3 +40,12 @@ CREATE TABLE IF NOT EXISTS movies_series_genres(
     CONSTRAINT FK_movies_series_genres_genre_id FOREIGN KEY(GENRE_ID) REFERENCES disney.genres(ID),
     CONSTRAINT FK_movies_series_genres_movie_serie_id FOREIGN KEY(MOVIE_SERIE_ID) REFERENCES disney.movies_series(ID)
 );
+
+CREATE TABLE IF NOT EXISTS movies_series_characters(
+	ID BIGINT AUTO_INCREMENT NOT NULL,
+    CHARACTER_ID BIGINT NOT NULL,
+    MOVIE_SERIE_ID BIGINT NOT NULL,
+    CONSTRAINT PK_movies_series_characters_id PRIMARY KEY(ID),
+    CONSTRAINT FK_movies_series_characters_character_id FOREIGN KEY(CHARACTER_ID) REFERENCES disney.characters(ID),
+    CONSTRAINT FK_movies_series_characters_movie_serie_id FOREIGN KEY(MOVIE_SERIE_ID) REFERENCES disney.movies_series(ID)
+);
