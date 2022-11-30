@@ -7,6 +7,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -38,6 +39,14 @@ public class User implements Serializable {
     @Column(name = "SOFT_DELETE", nullable = false)
     private boolean softDelete;
 
-    // Missing roles attribute.
+    @ManyToMany
+    @JoinTable(name = "users_roles",
+            joinColumns = {
+                    @JoinColumn(name = "USER_ID", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "ROLE_ID", referencedColumnName = "id")
+            }
+    )
+    private List<Role> roles;
 
 }
