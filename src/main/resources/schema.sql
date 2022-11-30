@@ -1,3 +1,5 @@
+DROP SCHEMA IF EXISTS disney;
+
 CREATE SCHEMA IF NOT EXISTS disney;
 
 USE disney;

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "characters")
@@ -30,6 +31,14 @@ public class Character implements Serializable {
     @Column(name = "CHARACTER_HISTORY")
     private String history;
 
-    // Missing moviesSeries attribute.
+    @ManyToMany
+    @JoinTable(name = "movies_series_characters",
+            joinColumns = {
+                    @JoinColumn(name = "CHARACTER_ID", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "MOVIE_SERIE_ID", referencedColumnName = "id")
+            }
+    )
+    private List<MovieSerie> moviesSeries;
     
 }
