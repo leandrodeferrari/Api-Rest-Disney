@@ -3,10 +3,11 @@ package com.disney.security.service.impl;
 import com.disney.security.dto.RegisterInDto;
 import com.disney.security.dto.RegisterOutDto;
 import com.disney.security.mapper.IAuthMapper;
-import com.disney.model.Role;
-import com.disney.model.User;
+import com.disney.security.model.Role;
+import com.disney.security.model.User;
 import com.disney.repository.IRoleRepository;
 import com.disney.repository.IUserRepository;
+import com.disney.security.model.enums.RoleEnum;
 import com.disney.security.service.IAuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,7 +46,7 @@ public class AuthServiceImpl implements IAuthService {
         user.setUpdateDate(LocalDateTime.now());
         user.setSoftDelete(false);
         List<Role> roles = new ArrayList<>();
-        roles.add(roleRepository.findByName("USER"));
+        roles.add(roleRepository.findByName(RoleEnum.USER.getName()));
         user.setRoles(roles);
 
         user.setPassword(passwordEncoder().encode(user.getPassword()));

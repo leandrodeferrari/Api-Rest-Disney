@@ -1,4 +1,4 @@
-package com.disney.model.enums;
+package com.disney.security.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
