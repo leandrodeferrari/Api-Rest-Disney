@@ -5,19 +5,18 @@ import com.disney.security.dto.RegisterOutDto;
 import com.disney.security.mapper.IAuthMapper;
 import com.disney.security.model.Role;
 import com.disney.security.model.User;
-import com.disney.repository.IRoleRepository;
-import com.disney.repository.IUserRepository;
+import com.disney.security.repository.IRoleRepository;
+import com.disney.security.repository.IUserRepository;
 import com.disney.security.model.enums.RoleEnum;
 import com.disney.security.service.IAuthService;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.disney.security.config.SecurityConfig.passwordEncoder;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -32,11 +31,6 @@ public class AuthServiceImpl implements IAuthService {
         this.userRepository = userRepository;
     }
 
-    @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Transactional
     @Override
     public RegisterOutDto register(RegisterInDto registerInDto) {
@@ -46,7 +40,7 @@ public class AuthServiceImpl implements IAuthService {
         user.setUpdateDate(LocalDateTime.now());
         user.setSoftDelete(false);
         List<Role> roles = new ArrayList<>();
-        roles.add(roleRepository.findByName(RoleEnum.USER.getName()));
+        roles.add(roleRepository.findByName(RoleEnum.USER.getName()).orElseThrow());
         user.setRoles(roles);
 
         user.setPassword(passwordEncoder().encode(user.getPassword()));
