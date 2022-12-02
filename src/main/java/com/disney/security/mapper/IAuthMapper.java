@@ -2,7 +2,7 @@ package com.disney.security.mapper;
 
 import com.disney.security.dto.RegisterInDto;
 import com.disney.security.dto.RegisterOutDto;
-import com.disney.model.User;
+import com.disney.security.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

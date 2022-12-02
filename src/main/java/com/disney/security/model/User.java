@@ -1,4 +1,4 @@
-package com.disney.model;
+package com.disney.security.model;
 
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;

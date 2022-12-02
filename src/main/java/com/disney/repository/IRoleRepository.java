@@ -1,6 +1,6 @@
 package com.disney.repository;
 
-import com.disney.model.Role;
+import com.disney.security.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
