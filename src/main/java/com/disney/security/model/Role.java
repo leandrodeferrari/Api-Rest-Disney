@@ -19,7 +19,7 @@ public class Role implements Serializable {
     @Column(name = "ROLE_NAME", length = 50, unique = true, nullable = false)
     private String name;
 
-   @ManyToMany
+   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
    @JoinTable(name = "users_roles",
            joinColumns = {
            @JoinColumn(name = "ROLE_ID", referencedColumnName = "id")},

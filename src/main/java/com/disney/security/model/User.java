@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @SQLDelete(sql = "UPDATE users SET softDelete = true WHERE id=?")
-@Where(clause = "softDelete = false")
+@Where(clause = "SOFT_DELETE = false")
 @Data
 public class User implements Serializable {
 
@@ -39,7 +39,7 @@ public class User implements Serializable {
     @Column(name = "SOFT_DELETE", nullable = false)
     private boolean softDelete;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = {
                     @JoinColumn(name = "USER_ID", referencedColumnName = "id")},

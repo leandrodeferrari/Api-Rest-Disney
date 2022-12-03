@@ -43,7 +43,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 Collections.emptyList()
         );
 
-
         return getAuthenticationManager().authenticate(userNamePAT);
 
     }
