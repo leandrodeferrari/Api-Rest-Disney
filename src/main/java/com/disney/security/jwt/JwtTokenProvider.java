@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
@@ -16,15 +15,12 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private Long expirationInMiliseconds;
+    private final String SECRET = "4qhq8LrEBfYcaRHxhdb9zURb2rf8e7Ud";
+    private final Long EXPIRATION_MILISECONDS = 3600000L;
 
     public String generateToken(String userName, String email){
 
-        Date expirationDate = new Date(System.currentTimeMillis() + this.expirationInMiliseconds);
+        Date expirationDate = new Date(System.currentTimeMillis() + EXPIRATION_MILISECONDS);
 
         Map<String, Object> extra = new HashMap<>();
         extra.put("userName", userName);
@@ -33,7 +29,7 @@ public class JwtTokenProvider {
                 .setSubject(email)
                 .setExpiration(expirationDate)
                 .addClaims(extra)
-                .signWith(Keys.hmacShaKeyFor(this.secret.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(this.SECRET.getBytes()))
                 .compact();
 
     }
@@ -43,7 +39,7 @@ public class JwtTokenProvider {
         try {
 
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secret.getBytes())
+                    .setSigningKey(SECRET.getBytes())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
