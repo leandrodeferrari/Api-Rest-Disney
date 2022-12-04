@@ -1,7 +1,12 @@
 package com.disney.security.jwt;
 
+import com.disney.security.model.UserDetailsImpl;
+import com.disney.security.service.impl.UserDetailsServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,27 +20,67 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public JwtAuthorizationFilter(JwtTokenProvider jwtTokenProvider){
+    public JwtAuthorizationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsServiceImpl userDetailsServiceImpl){
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
 
-        String bearerToken = request.getHeader("Authorization");
+        final String bearerToken = request.getHeader("Authorization");
 
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")){
+        String userNameOrEmail = null;
+        String jwtToken = null;
 
-            String token = bearerToken.replace("Bearer ", "");
-            UsernamePasswordAuthenticationToken userNamePAT = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(userNamePAT);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+
+            jwtToken = bearerToken.substring(7);
+
+            try {
+
+                userNameOrEmail = jwtTokenProvider.getUsernameFromToken(jwtToken);
+
+            } catch (IllegalArgumentException e) {
+
+                System.out.println("Unable to get JWT Token");
+
+            } catch (ExpiredJwtException e) {
+
+                System.out.println("JWT Token has expired");
+
+            } catch (SignatureException e){
+
+                logger.warn("Incorrect JWT");
+
+            }
+
+        } else {
+
+            logger.warn("JWT Token does not begin with Bearer String");
 
         }
 
-        filterChain.doFilter(request, response);
+        if (userNameOrEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            UserDetailsImpl userDetails = (UserDetailsImpl) this.userDetailsServiceImpl.loadUserByUsername(userNameOrEmail);
+
+            if (jwtTokenProvider.validateToken(jwtToken, userDetails)) {
+
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+            }
+        }
+
+        chain.doFilter(request, response);
 
     }
 
