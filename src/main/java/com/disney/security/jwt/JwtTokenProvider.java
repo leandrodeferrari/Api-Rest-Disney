@@ -1,59 +1,69 @@
 package com.disney.security.jwt;
 
+import com.disney.security.model.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements Serializable {
 
-    private final String SECRET = "4qhq8LrEBfYcaRHxhdb9zURb2rf8e7Ud";
-    private final Long EXPIRATION_MILISECONDS = 3600000L;
+    private static final String SECRET = Encoders.BASE64.encode(Keys.secretKeyFor(SignatureAlgorithm.HS512).getEncoded());
+    private static final Long EXPIRATION_MILLISECONDS = 3600000L;
 
-    public String generateToken(String userName, String email){
-
-        Date expirationDate = new Date(System.currentTimeMillis() + EXPIRATION_MILISECONDS);
-
-        Map<String, Object> extra = new HashMap<>();
-        extra.put("userName", userName);
-
-        return Jwts.builder()
-                .setSubject(email)
-                .setExpiration(expirationDate)
-                .addClaims(extra)
-                .signWith(Keys.hmacShaKeyFor(this.SECRET.getBytes()))
-                .compact();
-
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public UsernamePasswordAuthenticationToken getAuthentication(String token){
+    public Date getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
 
-        try {
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
 
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET.getBytes())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
-            String userNameOrEmail = claims.getSubject();
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
 
-            return new UsernamePasswordAuthenticationToken(userNameOrEmail, null, Collections.emptyList());
+    public String generateToken(UserDetailsImpl userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, userDetails.getUsername());
+    }
 
-        } catch (JwtException ex){
+    private String doGenerateToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MILLISECONDS))
+                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()),SignatureAlgorithm.HS512)
+                .compact();
+    }
 
-            return null;
-
-        }
-
+    public Boolean validateToken(String token, UserDetailsImpl userDetails) {
+        final String username = getUsernameFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
 }
