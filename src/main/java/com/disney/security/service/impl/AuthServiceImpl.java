@@ -69,9 +69,9 @@ public class AuthServiceImpl implements IAuthService {
 
         authManager.authenticate(new UsernamePasswordAuthenticationToken(loginInDto.getUserNameOrEmail(), loginInDto.getPassword()));
 
-        final UserDetailsImpl userDetails = userDetailsServiceImpl.loadUserByUsername(loginInDto.getUserNameOrEmail());
+        UserDetailsImpl userDetailsImpl = userDetailsServiceImpl.loadUserByUsername(loginInDto.getUserNameOrEmail());
 
-        String token = jwtTokenProvider.generateToken(userDetails);
+        String token = jwtTokenProvider.generateToken(userDetailsImpl);
 
         return new LoginOutDto(loginInDto.getUserNameOrEmail(), token);
 
