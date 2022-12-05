@@ -29,6 +29,7 @@ public class SecurityConfig {
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
+    @Autowired
     public SecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAuthorizationFilter jwtAuthorizationFilter, UserDetailsServiceImpl userDetailsServiceImpl){
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAuthorizationFilter = jwtAuthorizationFilter;
@@ -53,13 +54,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        return   http.cors().and().csrf().disable()
+        return   http.cors()
+                .and()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/auth/**", "/v3/api-docs/**", "/api/**")
                 .permitAll()
-                .anyRequest().authenticated().and()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .anyRequest()
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
