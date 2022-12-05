@@ -2,8 +2,6 @@ package com.disney.security.jwt;
 
 import com.disney.security.model.UserDetailsImpl;
 import com.disney.security.service.impl.UserDetailsServiceImpl;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,44 +40,25 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             jwtToken = bearerToken.substring(7);
 
-            try {
-
-                userNameOrEmail = jwtTokenProvider.getUsernameFromToken(jwtToken);
-
-            } catch (IllegalArgumentException e) {
-
-                System.out.println("Unable to get JWT Token");
-
-            } catch (ExpiredJwtException e) {
-
-                System.out.println("JWT Token has expired");
-
-            } catch (SignatureException e){
-
-                logger.warn("Incorrect JWT");
-
-            }
-
-        } else {
-
-            logger.warn("JWT Token does not begin with Bearer String");
+            userNameOrEmail = jwtTokenProvider.getUsernameFromToken(jwtToken);
 
         }
 
         if (userNameOrEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetailsImpl userDetails = (UserDetailsImpl) this.userDetailsServiceImpl.loadUserByUsername(userNameOrEmail);
+            UserDetailsImpl userDetailsImpl = this.userDetailsServiceImpl.loadUserByUsername(userNameOrEmail);
 
-            if (jwtTokenProvider.validateToken(jwtToken, userDetails)) {
+            if (jwtTokenProvider.validateToken(jwtToken, userDetailsImpl)) {
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        userDetailsImpl, null, userDetailsImpl.getAuthorities());
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
             }
+
         }
 
         chain.doFilter(request, response);
