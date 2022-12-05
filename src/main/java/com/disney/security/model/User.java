@@ -1,7 +1,6 @@
 package com.disney.security.model;
 
 import lombok.Data;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -11,8 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET softDelete = true WHERE id=?")
-@Where(clause = "SOFT_DELETE = false")
+@Where(clause = "SOFT_DELETE = 0")
 @Data
 public class User implements Serializable {
 
@@ -37,7 +35,7 @@ public class User implements Serializable {
     private LocalDateTime updateDate;
 
     @Column(name = "SOFT_DELETE", nullable = false)
-    private boolean softDelete;
+    private boolean softDelete = false;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",

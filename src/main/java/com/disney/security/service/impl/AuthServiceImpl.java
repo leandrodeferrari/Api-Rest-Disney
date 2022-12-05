@@ -13,6 +13,7 @@ import com.disney.security.repository.IRoleRepository;
 import com.disney.security.repository.IUserRepository;
 import com.disney.security.model.enums.RoleEnum;
 import com.disney.security.service.IAuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class AuthServiceImpl implements IAuthService {
     private final AuthenticationManager authManager;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
     public AuthServiceImpl(AuthenticationManager authManager, IAuthMapper authMapper, IRoleRepository roleRepository, IUserRepository userRepository, JwtTokenProvider jwtTokenProvider, UserDetailsServiceImpl userDetailsServiceImpl){
         this.authManager = authManager;
         this.authMapper = authMapper;
@@ -50,7 +52,6 @@ public class AuthServiceImpl implements IAuthService {
         User user = authMapper.registerInDtoToUser(registerInDto);
         user.setCreationDate(LocalDateTime.now());
         user.setUpdateDate(LocalDateTime.now());
-        user.setSoftDelete(false);
         List<Role> roles = new ArrayList<>();
         roles.add(roleRepository.findByName(RoleEnum.USER.getName()).orElseThrow());
         user.setRoles(roles);
