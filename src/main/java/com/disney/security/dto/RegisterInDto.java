@@ -11,11 +11,18 @@ import java.io.Serializable;
 @Data
 public class RegisterInDto implements Serializable {
 
-    @NotBlank @NotNull
+    @NotBlank(message = "The username cannot be blank")
+    @NotNull(message = "The username cannot be null")
     private String userName;
-    @Email @NotBlank @NotNull
+
+    @Email(message = "You must enter an email")
+    @NotBlank(message = "The email cannot be blank")
+    @NotNull(message = "The email cannot be null")
     private String email;
-    @NotBlank @NotNull @Size(min = 8)
+
+    @NotBlank(message = "The password cannot be blank")
+    @NotNull(message = "The password cannot be null")
+    @Size(min = 8, message = "The password cannot be less than 8 characters")
     private String password;
 
 }
