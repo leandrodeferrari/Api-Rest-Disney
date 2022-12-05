@@ -7,6 +7,7 @@ import com.disney.security.model.User;
 import com.disney.security.model.enums.RoleEnum;
 import com.disney.security.repository.IUserRepository;
 import com.disney.security.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ public class UserServiceImpl implements IUserService {
 
     private final IUserRepository userRepository;
 
+    @Autowired
     public UserServiceImpl(IUserRepository userRepository){
         this.userRepository = userRepository;
     }
