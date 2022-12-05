@@ -22,7 +22,7 @@ public class Genre implements Serializable {
     @Column(name = "URL_IMAGE", length = 50)
     private String urlImage;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "movies_series_genres",
             joinColumns = {
                     @JoinColumn(name = "GENRE_ID", referencedColumnName = "id")},
