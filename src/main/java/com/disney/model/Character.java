@@ -31,7 +31,7 @@ public class Character implements Serializable {
     @Column(name = "CHARACTER_HISTORY")
     private String history;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "movies_series_characters",
             joinColumns = {
                     @JoinColumn(name = "CHARACTER_ID", referencedColumnName = "id")},
