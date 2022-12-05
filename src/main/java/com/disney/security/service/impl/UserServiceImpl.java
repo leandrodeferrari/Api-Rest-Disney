@@ -46,8 +46,8 @@ public class UserServiceImpl implements IUserService {
             throw new BadRequestException("The user is already deleted");
 
         }
-
-        user.setSoftDelete(true);
+        
+        userRepository.deleteById(id);
 
     }
 

@@ -29,7 +29,7 @@ public class MovieSerie implements Serializable {
     @Column(name = "URL_IMAGE", length = 50)
     private String urlImage;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "movies_series_characters",
             joinColumns = {
                     @JoinColumn(name = "MOVIE_SERIE_ID", referencedColumnName = "id")},
@@ -39,7 +39,7 @@ public class MovieSerie implements Serializable {
     )
     private List<Character> characters;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "movies_series_genres",
             joinColumns = {
                     @JoinColumn(name = "MOVIE_SERIE_ID", referencedColumnName = "id")},
