@@ -60,7 +60,16 @@ public class AuthServiceImpl implements IAuthService {
 
         userRepository.save(user);
 
-        return authMapper.userToRegisterOutDto(user);
+        LoginInDto loginInDto = new LoginInDto();
+        loginInDto.setUserNameOrEmail(user.getUserName());
+        loginInDto.setPassword(registerInDto.getPassword());
+
+        LoginOutDto loginOutDto = login(loginInDto);
+
+        RegisterOutDto registerOutDto = authMapper.userToRegisterOutDto(user);
+        registerOutDto.setToken(loginOutDto.getToken());
+
+        return registerOutDto;
 
     }
 
