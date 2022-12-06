@@ -2,6 +2,8 @@ package com.disney.security.service.impl;
 
 import com.disney.exception.BadRequestException;
 import com.disney.exception.UnauthorizedException;
+import com.disney.security.dto.UserDto;
+import com.disney.security.mapper.IUserMapper;
 import com.disney.security.model.Role;
 import com.disney.security.model.User;
 import com.disney.security.model.enums.RoleEnum;
@@ -13,14 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
 
     private final IUserRepository userRepository;
+    private final IUserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(IUserRepository userRepository){
+    public UserServiceImpl(IUserMapper userMapper, IUserRepository userRepository){
+        this.userMapper = userMapper;
         this.userRepository = userRepository;
     }
 
@@ -49,6 +54,11 @@ public class UserServiceImpl implements IUserService {
         
         userRepository.deleteById(id);
 
+    }
+
+    @Override
+    public List<UserDto> getAll() {
+        return userRepository.findAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
     }
 
 }
