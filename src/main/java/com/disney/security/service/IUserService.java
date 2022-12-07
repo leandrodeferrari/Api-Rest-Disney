@@ -10,4 +10,6 @@ public interface IUserService {
 
     List<UserDto> getAll();
 
+    UserDto update(String userName, String password);
+
 }
