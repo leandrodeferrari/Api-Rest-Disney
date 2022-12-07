@@ -3,12 +3,11 @@ package com.disney.security.controller;
 import com.disney.security.dto.UserDto;
 import com.disney.security.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -23,8 +22,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAll(){
-       return ResponseEntity.ok().body(userService.getAll());
+    public ResponseEntity<Page<UserDto>> getAll(@RequestParam("page") Integer pageNumber){
+       return ResponseEntity.ok().body(userService.getAll(pageNumber));
     }
 
    @PatchMapping

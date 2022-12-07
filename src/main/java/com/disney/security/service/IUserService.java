@@ -1,14 +1,13 @@
 package com.disney.security.service;
 
 import com.disney.security.dto.UserDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface IUserService {
 
     void deleteById(Long id);
 
-    List<UserDto> getAll();
+    Page<UserDto> getAll(Integer pageNumber);
 
     UserDto update(String userName, String password);
 
