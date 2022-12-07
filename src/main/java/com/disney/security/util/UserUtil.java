@@ -28,4 +28,24 @@ public class UserUtil {
 
     }
 
+    public static void validatePageNumber(Integer pageNumber){
+
+        if(pageNumber == null){
+            throw new BadRequestException("The page number cannot be null");
+        }
+
+        if(pageNumber < 0){
+            throw new BadRequestException("The page number cannot be minor than 0");
+        }
+
+    }
+
+    public static void validateTotalPages(Integer totalPages, Integer pageNumber){
+
+        if(totalPages < pageNumber){
+            throw new BadRequestException("The page number is greater than the total number of pages");
+        }
+
+    }
+
 }
