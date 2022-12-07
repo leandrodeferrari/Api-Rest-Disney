@@ -27,6 +27,11 @@ public class UserController {
        return ResponseEntity.ok().body(userService.getAll());
     }
 
+   @PatchMapping
+   public ResponseEntity<UserDto> update(@RequestParam("userName") String userName, @RequestParam("password") String password){
+       return ResponseEntity.ok().body(userService.update(userName, password));
+   }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable("id") Long id){
        userService.deleteById(id);
