@@ -11,6 +11,8 @@ import com.disney.security.repository.IUserRepository;
 import com.disney.security.service.IUserService;
 import com.disney.security.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +63,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<UserDto> getAll() {
-        return userRepository.findAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
+    public Page<UserDto> getAll(Integer pageNumber) {
+
+        UserUtil.validatePageNumber(pageNumber);
+
+        Page<User> users = userRepository.findAll(PageRequest.of(pageNumber,5));
+
+        Integer totalPages = users.getTotalPages() - 1;
+        UserUtil.validateTotalPages(totalPages, pageNumber);
+
+        return users.map(userMapper::userToUserDto);
+
     }
 
     @Transactional
